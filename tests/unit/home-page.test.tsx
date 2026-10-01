@@ -11,4 +11,12 @@ describe("Home page", () => {
       screen.getByText(/not an insurer, agent or broker/i),
     ).toBeInTheDocument();
   });
+
+  it("renders the C1 worked example with its provenance and the math behind it", () => {
+    render(<Home />);
+
+    expect(screen.getByText("$1,800.00")).toBeInTheDocument();
+    expect(screen.getByText("Calculated")).toBeInTheDocument();
+    expect(screen.getByText("Show the math")).toBeInTheDocument();
+  });
 });
