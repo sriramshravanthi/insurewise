@@ -26,8 +26,10 @@ describe("bundleDelta (C9) properties", () => {
           expect(forward.status).toBe("ok");
           expect(swapped.status).toBe("ok");
           if (forward.status !== "ok" || swapped.status !== "ok") return;
-          expect(swapped.value.differenceCents.amount).toBe(
-            -forward.value.differenceCents.amount,
+          // `+ 0` normalizes -0 to +0 so a===b (both differences 0) doesn't
+          // fail toBe's Object.is comparison of -0 vs +0.
+          expect(swapped.value.differenceCents.amount + 0).toBe(
+            -forward.value.differenceCents.amount + 0,
           );
         },
       ),
