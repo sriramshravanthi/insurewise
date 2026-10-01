@@ -25,6 +25,25 @@ const thresholdRule: ReviewRule = {
 };
 
 describe("evaluateReviewRule (§4 review-rule evaluation)", () => {
+  it("echoes questionTemplateId through when the rule declares one (PRD EDU-4)", () => {
+    const rule: ReviewRule = { ...thresholdRule, questionTemplateId: "q.high-ratio" };
+    const result = evaluateReviewRule(rule, { coverageToValueRatioPct: 15 });
+
+    expect(result.status).toBe("ok");
+    if (result.status !== "ok") return;
+    expect(result.value.questionTemplateId).toBe("q.high-ratio");
+  });
+
+  it("leaves questionTemplateId undefined when the rule does not declare one", () => {
+    const result = evaluateReviewRule(thresholdRule, {
+      coverageToValueRatioPct: 15,
+    });
+
+    expect(result.status).toBe("ok");
+    if (result.status !== "ok") return;
+    expect(result.value.questionTemplateId).toBeUndefined();
+  });
+
   it("triggers a finding when the condition is true", () => {
     const result = evaluateReviewRule(thresholdRule, {
       coverageToValueRatioPct: 15,

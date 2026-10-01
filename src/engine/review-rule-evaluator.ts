@@ -14,6 +14,8 @@ export interface RuleFinding {
   inputsUsed: string[];
   severity: string;
   messageTemplateId: string;
+  /** PRD EDU-4: "questions to ask a professional" tied to this finding. */
+  questionTemplateId?: string;
   sourceIds: string[];
   /** The rule's own parameters, echoed back with their provenance label. */
   parameters: Record<string, Value<number>>;
@@ -171,6 +173,7 @@ export function evaluateReviewRule(
       inputsUsed: rule.requiredInputs,
       severity: rule.severity,
       messageTemplateId: rule.messageTemplateId,
+      questionTemplateId: rule.questionTemplateId,
       sourceIds: rule.sourceIds,
       parameters: parameterValues,
     },

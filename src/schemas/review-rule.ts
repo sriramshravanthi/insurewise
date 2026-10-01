@@ -82,6 +82,8 @@ export const ReviewRuleSchema = z.object({
   condition: ConditionSchema,
   severity: z.string().min(1),
   messageTemplateId: z.string().min(1),
+  /** docs/DATA-MODEL.md review_rules.question_template_id — feeds PRD EDU-4. */
+  questionTemplateId: z.string().min(1).optional(),
   sourceIds: z.array(z.string().min(1)).min(1),
   parameters: z.record(z.string(), RuleParameterSchema),
 });
