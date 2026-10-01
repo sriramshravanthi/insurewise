@@ -56,8 +56,21 @@ const boundaryRules = [
   ),
   restrict(
     ["src/providers/**"],
-    ["@/components", "@/components/*", "@/app", "@/app/*"],
-    "providers must not import UI code (docs/ARCHITECTURE.md §4).",
+    [
+      "@/components",
+      "@/components/*",
+      "@/app",
+      "@/app/*",
+      "@/engine",
+      "@/engine/*",
+      "@/lib",
+      "@/lib/*",
+      "@/ai",
+      "@/ai/*",
+      "@/features",
+      "@/features/*",
+    ],
+    "providers may import only schemas (docs/ARCHITECTURE.md §4).",
   ),
   restrict(
     ["src/ai/**"],
