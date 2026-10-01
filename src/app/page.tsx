@@ -17,8 +17,6 @@ export default function Home() {
       <h1 className="text-2xl font-semibold">InsureWise</h1>
       <p className="max-w-md text-sm text-muted-foreground">
         An educational, decision-support tool for car and home insurance.
-        InsureWise is not an insurer, agent or broker, and does not provide
-        quotes or advice.
       </p>
       {result.status === "ok" && (
         <MoneyValue
