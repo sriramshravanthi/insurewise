@@ -22,7 +22,7 @@ export function NumericValue({ label, value, unit, trace }: NumericValueProps) {
       </div>
       <span className="text-2xl font-semibold tabular-nums">
         {value.amount}
-        {unit ? ` ${unit}` : ""}
+        {unit ? (unit === "%" ? unit : ` ${unit}`) : ""}
       </span>
       {trace && (
         <details className="text-sm text-muted-foreground">

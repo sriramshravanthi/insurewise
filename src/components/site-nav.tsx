@@ -16,6 +16,9 @@ export function SiteNav() {
       <Link href="/compare" className="text-muted-foreground hover:text-foreground">
         Compare policies
       </Link>
+      <Link href="/review" className="text-muted-foreground hover:text-foreground">
+        Review items
+      </Link>
     </nav>
   );
 }

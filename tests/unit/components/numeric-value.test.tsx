@@ -16,6 +16,18 @@ describe("NumericValue", () => {
     expect(screen.getByText("Calculated")).toBeInTheDocument();
   });
 
+  it("renders a percent unit with no space, unlike a word unit", () => {
+    render(
+      <NumericValue
+        label="Ratio"
+        value={{ amount: 10, provenance: "illustrative" }}
+        unit="%"
+      />,
+    );
+
+    expect(screen.getByText("10%")).toBeInTheDocument();
+  });
+
   it("renders without a unit or trace", () => {
     render(
       <NumericValue label="Count" value={{ amount: 4, provenance: "entered" }} />,

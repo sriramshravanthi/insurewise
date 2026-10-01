@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { SiteNav } from "@/components/site-nav";
 
 describe("SiteNav", () => {
-  it("links to the home page, the deductible simulator, and compare policies", () => {
+  it("links to the home page, the deductible simulator, compare policies, and review items", () => {
     render(<SiteNav />);
 
     expect(screen.getByRole("link", { name: "InsureWise" })).toHaveAttribute(
@@ -16,5 +16,9 @@ describe("SiteNav", () => {
     expect(
       screen.getByRole("link", { name: "Compare policies" }),
     ).toHaveAttribute("href", "/compare");
+    expect(screen.getByRole("link", { name: "Review items" })).toHaveAttribute(
+      "href",
+      "/review",
+    );
   });
 });
