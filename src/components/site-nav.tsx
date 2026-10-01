@@ -13,6 +13,9 @@ export function SiteNav() {
       <Link href="/scenarios" className="text-muted-foreground hover:text-foreground">
         Deductible simulator
       </Link>
+      <Link href="/compare" className="text-muted-foreground hover:text-foreground">
+        Compare policies
+      </Link>
     </nav>
   );
 }
