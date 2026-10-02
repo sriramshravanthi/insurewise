@@ -13,6 +13,9 @@ export function SiteNav() {
       <Link href="/car" className="text-muted-foreground hover:text-foreground">
         Car profile
       </Link>
+      <Link href="/home" className="text-muted-foreground hover:text-foreground">
+        Home profile
+      </Link>
       <Link href="/scenarios" className="text-muted-foreground hover:text-foreground">
         Deductible simulator
       </Link>
