@@ -10,6 +10,9 @@ export function SiteNav() {
       <Link href="/" className="font-semibold">
         InsureWise
       </Link>
+      <Link href="/car" className="text-muted-foreground hover:text-foreground">
+        Car profile
+      </Link>
       <Link href="/scenarios" className="text-muted-foreground hover:text-foreground">
         Deductible simulator
       </Link>

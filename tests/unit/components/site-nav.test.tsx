@@ -3,12 +3,16 @@ import { render, screen } from "@testing-library/react";
 import { SiteNav } from "@/components/site-nav";
 
 describe("SiteNav", () => {
-  it("links to the home page, the deductible simulator, compare policies, and review items", () => {
+  it("links to the home page, car profile, the deductible simulator, compare policies, and review items", () => {
     render(<SiteNav />);
 
     expect(screen.getByRole("link", { name: "InsureWise" })).toHaveAttribute(
       "href",
       "/",
+    );
+    expect(screen.getByRole("link", { name: "Car profile" })).toHaveAttribute(
+      "href",
+      "/car",
     );
     expect(
       screen.getByRole("link", { name: "Deductible simulator" }),
