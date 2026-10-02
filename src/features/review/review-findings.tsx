@@ -18,6 +18,8 @@ import {
   type ReviewFindingsResult,
 } from "@/engine/review-findings-compiler";
 import { generateProfessionalQuestions } from "@/engine/professional-questions";
+import { buildFactPacket, reviewFindingsToFacts } from "@/ai/fact-packet";
+import { AskAssistant } from "@/features/assistant/ask-assistant";
 import { DEMO_REVIEW_RULE } from "./demo-review-rule";
 
 const DEFAULT_VALUES: ReviewFindingsForm = {
@@ -190,6 +192,10 @@ export function ReviewFindings() {
                 </ul>
               </div>
             )}
+
+          <AskAssistant
+            facts={buildFactPacket(reviewFindingsToFacts(outcome.findingsResult)).facts}
+          />
         </section>
       )}
     </div>

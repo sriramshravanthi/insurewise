@@ -16,6 +16,7 @@ export default defineConfig({
     include: [
       "tests/unit/**/*.test.{ts,tsx}",
       "tests/property/**/*.test.{ts,tsx}",
+      "tests/ai-evals/**/*.test.{ts,tsx}",
     ],
   },
 });
