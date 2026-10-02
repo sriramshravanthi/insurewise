@@ -19,6 +19,8 @@ import { dollarsToCents } from "@/schemas/deductible-simulator-form";
 import { homeCoverageRatios } from "@/engine/home-coverage-ratios";
 import { rebuildEstimate } from "@/engine/rebuild-estimate";
 import { premiumComposition, type PremiumLine } from "@/engine/premium-composition";
+import { getCoverageDefinition } from "@/reference/coverage-definitions";
+import { getChecklistItems } from "@/reference/checklist-items";
 
 const COVERAGE_LABELS: Record<string, string> = {
   dwelling: "Dwelling (A)",
@@ -418,13 +420,19 @@ export function HomeProfile() {
           <div className="flex flex-col gap-3">
             <h2 className="text-lg font-semibold">Coverage breakdown</h2>
             <p className="text-xs text-muted-foreground">
-              Plain-language coverage definitions aren&apos;t available yet
-              — they depend on the coverage catalog (Reference/Content
-              layer, not yet built).
+              Plain-language definitions below come from the coverage
+              catalog; a coverage without a verified, sourced definition
+              yet (docs/RESEARCH-SOURCES.md is still Phase 0) shows just
+              the entered values.
             </p>
-            {submitted.coverages.map((c, i) => (
+            {submitted.coverages.map((c, i) => {
+              const definition = getCoverageDefinition(c.code, "home");
+              return (
               <div key={i} className="rounded-lg border p-3 text-sm">
                 <p className="font-medium">{COVERAGE_LABELS[c.code]}</p>
+                {definition && (
+                  <p className="mt-1 text-xs text-muted-foreground">{definition.plainLanguage}</p>
+                )}
                 {c.included ? (
                   <p className="mt-1 text-muted-foreground">
                     Limit:{" "}
@@ -434,7 +442,8 @@ export function HomeProfile() {
                   <p className="mt-1 text-muted-foreground">Not entered</p>
                 )}
               </div>
-            ))}
+              );
+            })}
 
             {ratiosResult?.status === "ok" ? (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -492,14 +501,15 @@ export function HomeProfile() {
           <div className="flex flex-col gap-3">
             <h2 className="text-lg font-semibold">Home risk checklist</h2>
             <p className="text-xs text-muted-foreground">
-              Placeholder: tracks profile completeness only. Real,
-              sourced risk-checklist items (why each matters, with a
-              citation) depend on the Reference/Content layer, not yet
-              built.
+              Placeholder: tracks profile completeness only. Real, sourced
+              risk-checklist items (why each matters, with a citation) have
+              no verified source yet (docs/RESEARCH-SOURCES.md is still
+              Phase 0) and will appear below once one clears verification.
             </p>
             {(() => {
               const items = buildChecklist(submitted);
               const doneCount = items.filter((i) => i.done).length;
+              const sourcedItems = getChecklistItems("home");
               return (
                 <>
                   <p className="text-sm font-medium">
@@ -516,6 +526,19 @@ export function HomeProfile() {
                       </li>
                     ))}
                   </ul>
+                  {sourcedItems.length > 0 && (
+                    <ul className="flex flex-col gap-2 text-sm">
+                      {sourcedItems.map((item) => (
+                        <li key={item.id} className="rounded-lg border p-3">
+                          <p>{item.text}</p>
+                          <p className="text-xs text-muted-foreground">{item.whyItMatters}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Source: {item.sourceIds.join(", ")}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </>
               );
             })()}

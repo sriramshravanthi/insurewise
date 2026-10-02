@@ -18,6 +18,8 @@ import {
 import { dollarsToCents } from "@/schemas/deductible-simulator-form";
 import { COMPARISON_COVERAGE_CODES } from "@/schemas/policy-comparison-form";
 import { premiumComposition, type PremiumLine } from "@/engine/premium-composition";
+import { getCoverageDefinition } from "@/reference/coverage-definitions";
+import { getRatingFactors } from "@/reference/rating-factors";
 
 // A UI-to-engine adapter, not a shape — belongs here, not in schemas
 // (schemas is the dependency root and may not import from engine).
@@ -351,13 +353,19 @@ export function CarProfile() {
           <div className="flex flex-col gap-3">
             <h2 className="text-lg font-semibold">Coverage breakdown</h2>
             <p className="text-xs text-muted-foreground">
-              Plain-language coverage definitions aren&apos;t available yet
-              — they depend on the coverage catalog (Reference/Content
-              layer, not yet built).
+              Plain-language definitions below come from the coverage
+              catalog; a coverage without a verified, sourced definition
+              yet (docs/RESEARCH-SOURCES.md is still Phase 0) shows just
+              the entered values.
             </p>
-            {submitted.coverages.map((c, i) => (
+            {submitted.coverages.map((c, i) => {
+              const definition = getCoverageDefinition(c.code, "auto");
+              return (
               <div key={i} className="rounded-lg border p-3 text-sm">
                 <p className="font-medium">{COVERAGE_LABELS[c.code]}</p>
+                {definition && (
+                  <p className="mt-1 text-xs text-muted-foreground">{definition.plainLanguage}</p>
+                )}
                 {c.included ? (
                   <dl className="mt-1 grid grid-cols-2 gap-1 text-muted-foreground">
                     <dt>Limit (primary)</dt>
@@ -383,16 +391,34 @@ export function CarProfile() {
                   <p className="mt-1 text-muted-foreground">Not entered</p>
                 )}
               </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="flex flex-col gap-3">
             <h2 className="text-lg font-semibold">Premium explanation</h2>
-            <p className="text-xs text-muted-foreground">
-              Sourced factor cards mapped to your entered attributes
-              aren&apos;t available yet — they depend on verified rating
-              factors (Reference/Content layer, not yet built).
-            </p>
+            {(() => {
+              const factors = getRatingFactors("auto");
+              return factors.length === 0 ? (
+                <p className="text-xs text-muted-foreground">
+                  No verified rating factors are available yet (docs/RESEARCH-SOURCES.md
+                  is still Phase 0) — sourced factor cards will appear here once one
+                  clears verification.
+                </p>
+              ) : (
+                <ul className="flex flex-col gap-2">
+                  {factors.map((factor) => (
+                    <li key={factor.id} className="rounded-lg border p-3 text-sm">
+                      <p className="font-medium">{factor.factor}</p>
+                      <p className="text-muted-foreground">{factor.howCommonlyConsidered}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Source: {factor.sourceIds.join(", ")}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              );
+            })()}
             {compositionResult?.status === "ok" ? (
               <ul className="flex flex-col gap-2">
                 {compositionResult.value.shares.map((share) => (

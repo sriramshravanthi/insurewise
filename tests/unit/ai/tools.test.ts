@@ -16,7 +16,7 @@ describe("createFactLookupTool (docs/PRD.md AI-2: read-only lookup tools)", () =
   it("returns the fact when the id is present in the packet", () => {
     expect(tool.execute({ factId: "fact-1" })).toEqual({
       found: true,
-      fact: { id: "fact-1", label: "Fact 1", value: 42, provenance: "calculated" },
+      data: { id: "fact-1", label: "Fact 1", value: 42, provenance: "calculated" },
     });
   });
 

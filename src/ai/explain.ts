@@ -1,6 +1,7 @@
 import type { FactPacket } from "@/schemas/fact";
 import { buildUserPrompt, SYSTEM_PROMPT } from "./system-prompt";
 import { createFactLookupTool, type Tool } from "./tools";
+import { createGlossaryLookupTool } from "./reference-tools";
 import { validateAssistantOutput } from "./output-validator";
 import type { AIProvider, ProviderMessage } from "./provider";
 
@@ -21,19 +22,17 @@ const MAX_ATTEMPTS = 2;
 // tools can never loop indefinitely.
 async function runAttempt(
   provider: AIProvider,
-  tool: Tool,
+  tools: Tool[],
   system: string,
   messages: ProviderMessage[],
 ): Promise<string | null> {
-  const first = await provider.complete({
-    system,
-    messages,
-    tools: [tool.definition],
-  });
+  const toolDefinitions = tools.map((tool) => tool.definition);
+  const first = await provider.complete({ system, messages, tools: toolDefinitions });
   if (first.type === "text") return first.text;
 
-  const result = tool.execute(first.input);
-  const toolResultText = result.found ? JSON.stringify(result.fact) : "not_found";
+  const tool = tools.find((t) => t.definition.name === first.name);
+  const result = tool?.execute(first.input) ?? { found: false as const };
+  const toolResultText = result.found ? JSON.stringify(result.data) : "not_found";
   const followUpMessages: ProviderMessage[] = [
     ...messages,
     {
@@ -45,11 +44,7 @@ async function runAttempt(
       content: [{ type: "tool_result", toolUseId: first.id, content: toolResultText }],
     },
   ];
-  const second = await provider.complete({
-    system,
-    messages: followUpMessages,
-    tools: [tool.definition],
-  });
+  const second = await provider.complete({ system, messages: followUpMessages, tools: toolDefinitions });
   return second.type === "text" ? second.text : null;
 }
 
@@ -64,14 +59,14 @@ export async function explain(
     return { status: "insufficient_data" };
   }
 
-  const tool = createFactLookupTool(factPacket);
+  const tools: Tool[] = [createFactLookupTool(factPacket), createGlossaryLookupTool()];
   const system = SYSTEM_PROMPT;
   const messages: ProviderMessage[] = [
     { role: "user", content: buildUserPrompt(factPacket, question) },
   ];
 
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-    const text = await runAttempt(provider, tool, system, messages);
+    const text = await runAttempt(provider, tools, system, messages);
     if (text === null) continue;
 
     const validated = validateAssistantOutput(text, factPacket);
