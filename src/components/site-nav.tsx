@@ -25,6 +25,9 @@ export function SiteNav() {
       <Link href="/review" className="text-muted-foreground hover:text-foreground">
         Review items
       </Link>
+      <Link href="/sign-in" className="text-muted-foreground hover:text-foreground">
+        Sign in
+      </Link>
     </nav>
   );
 }

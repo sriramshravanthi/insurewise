@@ -5,9 +5,10 @@ import type { z } from "zod";
 // load, records are validated with current schemas; failing records are
 // quarantined with a user-visible 'couldn't restore this item' state."
 //
-// The sign-in migration's upload/clear steps need a live Supabase session,
-// which doesn't exist yet — deferred to the Authentication group. Only the
-// "validate" half is implemented here (loadValidated).
+// This module implements the "validate" step (loadValidated) and the
+// "clear local copies" step (clearStore, via clearHouseholds). The
+// "upload"/"confirm" steps of the sign-in migration live in
+// src/lib/guest-to-account-migration.ts, which calls back into this module.
 
 const DATABASE_NAME = "insurewise";
 const DATABASE_VERSION = 1;

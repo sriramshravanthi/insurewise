@@ -61,4 +61,25 @@ describe("HouseholdSchema", () => {
   it("never stores a personal name field — only an opaque label (CLAUDE.md rule 7)", () => {
     expect(Object.keys(HouseholdSchema.shape)).not.toContain("name");
   });
+
+  it("accepts an ownerId once a guest household is migrated to an account (docs/DATA-MODEL.md §3, §10)", () => {
+    const result = HouseholdSchema.safeParse({
+      id: VALID_ID,
+      state: "CA",
+      isSample: false,
+      ownerId: "223e4567-e89b-12d3-a456-426614174000",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects a non-UUID ownerId", () => {
+    expect(
+      HouseholdSchema.safeParse({
+        id: VALID_ID,
+        state: "CA",
+        isSample: false,
+        ownerId: "not-a-uuid",
+      }).success,
+    ).toBe(false);
+  });
 });
