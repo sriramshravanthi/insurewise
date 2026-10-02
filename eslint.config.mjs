@@ -79,8 +79,19 @@ const boundaryRules = [
   ),
   restrict(
     ["src/lib/**"],
-    ["@/engine", "@/engine/*"],
-    "lib must not reach into engine internals (docs/ARCHITECTURE.md §4).",
+    [
+      "@/engine",
+      "@/engine/*",
+      "@/ai",
+      "@/ai/*",
+      "@/components",
+      "@/components/*",
+      "@/app",
+      "@/app/*",
+      "@/features",
+      "@/features/*",
+    ],
+    "lib may import only schemas (docs/ARCHITECTURE.md §4).",
   ),
   restrict(
     ["src/components/**"],
