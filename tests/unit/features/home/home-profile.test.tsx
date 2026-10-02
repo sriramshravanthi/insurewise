@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
 import { HomeProfile } from "@/features/home/home-profile";
 
 // Coverage rows render in HOME_COVERAGE_CODES order: dwelling,
@@ -31,6 +31,26 @@ describe("HomeProfile", () => {
     });
     expect(screen.getByText("20%")).toBeInTheDocument();
     expect(screen.getByText("85.7%")).toBeInTheDocument();
+  });
+
+  it("labels the dwelling-vs-rebuild ratio Illustrative when the rebuild estimate comes from sqft x cost/sqft (C11)", async () => {
+    render(<HomeProfile />);
+
+    fillCoverageLine(0, "600000", "600"); // dwelling (A)
+    fireEvent.change(screen.getByLabelText("Square feet"), {
+      target: { value: "2000" },
+    });
+    fireEvent.change(screen.getByLabelText("Cost per sq ft ($, Illustrative)"), {
+      target: { value: "350" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Show home profile" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("85.7%")).toBeInTheDocument();
+    });
+    const ratioRow = screen.getByText("Dwelling vs. rebuild estimate").parentElement;
+    expect(ratioRow).not.toBeNull();
+    expect(ratioRow && within(ratioRow).getByText("Illustrative")).toBeInTheDocument();
   });
 
   it("shows the market-value-vs-rebuild-cost note, hedged as a question for a professional (HOM-2)", async () => {

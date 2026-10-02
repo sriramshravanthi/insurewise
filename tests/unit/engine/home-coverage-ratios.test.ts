@@ -74,6 +74,35 @@ describe("homeCoverageRatios (C10)", () => {
     expect(result.value.contentsRatio?.provenance).toBe("illustrative");
   });
 
+  it("labels dwellingVsRebuildRatio Illustrative when only the rebuild estimate is Illustrative (C11), leaving the other ratios Calculated", () => {
+    const result = homeCoverageRatios({
+      dwellingLimitCents: 60_000_000,
+      contentsLimitCents: 30_000_000,
+      lossOfUseLimitCents: 12_000_000,
+      rebuildEstimateCents: 70_000_000,
+      provenance: "entered",
+      rebuildEstimateProvenance: "illustrative",
+    });
+
+    expect(result.status).toBe("ok");
+    if (result.status !== "ok") return;
+    expect(result.value.dwellingVsRebuildRatio?.provenance).toBe("illustrative");
+    expect(result.value.contentsRatio?.provenance).toBe("calculated");
+    expect(result.value.lossOfUseRatio?.provenance).toBe("calculated");
+  });
+
+  it("defaults rebuildEstimateProvenance to the overall provenance when omitted (backward compatible)", () => {
+    const result = homeCoverageRatios({
+      dwellingLimitCents: 60_000_000,
+      rebuildEstimateCents: 70_000_000,
+      provenance: "entered",
+    });
+
+    expect(result.status).toBe("ok");
+    if (result.status !== "ok") return;
+    expect(result.value.dwellingVsRebuildRatio?.provenance).toBe("calculated");
+  });
+
   it("rejects negative money as invalid", () => {
     expect(
       homeCoverageRatios({ dwellingLimitCents: -1, provenance: "entered" })

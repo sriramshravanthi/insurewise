@@ -10,9 +10,17 @@ export type ValidationResult =
   | { status: "ok"; output: AssistantOutput }
   | { status: "invalid"; reason: "not_json" | "schema" | "no_citation" | "unknown_fact_id" | "ungrounded_number" | "language_policy" };
 
+// Comma-grouped alternative tried first so "1,000" extracts as one number
+// (1000), not "1" and "000" (1 and 0) — the latter would wrongly reject a
+// correctly-grounded answer. The leading "-?" means a sign-flipped claim
+// (e.g. "-25%" against a fact of 25) extracts as -25, a different number
+// from the packet's 25, so it's correctly caught as ungrounded rather than
+// silently matching through a dropped sign.
+const NUMBER_PATTERN = /-?\d{1,3}(?:,\d{3})+(?:\.\d+)?|-?\d+(?:\.\d+)?/g;
+
 function extractNumbers(text: string): number[] {
-  const matches = text.match(/\d+(\.\d+)?/g);
-  return matches ? matches.map(Number) : [];
+  const matches = text.match(NUMBER_PATTERN);
+  return matches ? matches.map((match) => Number(match.replace(/,/g, ""))) : [];
 }
 
 export function validateAssistantOutput(

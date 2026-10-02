@@ -14,6 +14,13 @@ export interface HomeCoverageRatiosInput {
   /** Entered directly, or sourced from C11 once that exists. */
   rebuildEstimateCents?: MoneyCents;
   provenance: Provenance;
+  /**
+   * Provenance of rebuildEstimateCents specifically, when it differs from
+   * `provenance` — e.g. computed via C11 (always Illustrative,
+   * docs/CALCULATIONS.md §2) rather than entered directly. Defaults to
+   * `provenance` when omitted, so existing callers are unaffected.
+   */
+  rebuildEstimateProvenance?: Provenance;
 }
 
 export interface HomeCoverageRatiosOutput {
@@ -67,6 +74,16 @@ export function homeCoverageRatios(
 
   const outputProvenance: Provenance =
     input.provenance === "illustrative" ? "illustrative" : "calculated";
+  const rebuildEstimateProvenance = input.rebuildEstimateProvenance ?? input.provenance;
+  // dwellingVsRebuildRatio depends on rebuildEstimateCents, not
+  // contents/lossOfUse — its provenance must reflect rebuildEstimateCents's
+  // own weakest-link provenance, which can differ from the other two
+  // ratios' (CALCULATIONS.md §1: "If any input is Illustrative, the output
+  // is labeled Illustrative").
+  const dwellingVsRebuildProvenance: Provenance =
+    input.provenance === "illustrative" || rebuildEstimateProvenance === "illustrative"
+      ? "illustrative"
+      : "calculated";
 
   const traceInputs: TraceInput[] = [
     {
@@ -135,7 +152,7 @@ export function homeCoverageRatios(
       key: "rebuildEstimateCents",
       label: "Rebuild estimate",
       value: rebuildEstimateCents,
-      provenance: input.provenance,
+      provenance: rebuildEstimateProvenance,
     });
     if (rebuildEstimateCents === 0) {
       notes.push(
@@ -145,7 +162,7 @@ export function homeCoverageRatios(
       const value = roundHalfUpToOneDecimal(
         (dwellingLimitCents / rebuildEstimateCents) * 100,
       );
-      dwellingVsRebuildRatio = { amount: value, provenance: outputProvenance };
+      dwellingVsRebuildRatio = { amount: value, provenance: dwellingVsRebuildProvenance };
       steps.push({
         label: "Dwelling-vs-rebuild ratio",
         expression: `${dwellingLimitCents} / ${rebuildEstimateCents} × 100`,

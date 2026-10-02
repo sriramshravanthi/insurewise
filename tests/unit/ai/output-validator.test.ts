@@ -75,4 +75,23 @@ describe("validateAssistantOutput (docs/PRD.md AI-4)", () => {
     );
     expect(result).toEqual({ status: "invalid", reason: "language_policy" });
   });
+
+  it("rejects a sign-flipped number as ungrounded rather than matching through a dropped minus sign", () => {
+    const result = validateAssistantOutput(
+      JSON.stringify({ answer: "The relevant figure is -10%.", citedFactIds: ["fact-1"] }),
+      PACKET,
+    );
+    expect(result).toEqual({ status: "invalid", reason: "ungrounded_number" });
+  });
+
+  it("accepts a comma-grouped number that matches a fact value (e.g. \"1,000\")", () => {
+    const packet = buildFactPacket([
+      { id: "fact-2", label: "Fact 2", value: 1000, unit: "$", provenance: "entered" },
+    ]);
+    const result = validateAssistantOutput(
+      JSON.stringify({ answer: "The entered value is $1,000.", citedFactIds: ["fact-2"] }),
+      packet,
+    );
+    expect(result.status).toBe("ok");
+  });
 });

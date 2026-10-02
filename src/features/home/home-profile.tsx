@@ -106,11 +106,17 @@ export function HomeProfile() {
   const lossOfUse = submitted?.coverages.find((c) => c.code === "loss_of_use");
 
   let resolvedRebuildEstimateCents: number | undefined;
+  // rebuildEstimate() (C11) is always Illustrative (docs/CALCULATIONS.md
+  // §2: "costPerSqFt is Entered by the user (Illustrative)") — tracked
+  // separately from a directly-entered estimate so the dwelling-vs-rebuild
+  // ratio below carries the correct provenance either way.
+  let resolvedRebuildEstimateProvenance: "entered" | "illustrative" | undefined;
   if (submitted) {
     if (submitted.property.rebuildEstimateDollars !== undefined) {
       resolvedRebuildEstimateCents = dollarsToCents(
         submitted.property.rebuildEstimateDollars,
       );
+      resolvedRebuildEstimateProvenance = "entered";
     } else if (
       submitted.property.sqft !== undefined &&
       submitted.property.costPerSqftDollars !== undefined
@@ -121,6 +127,7 @@ export function HomeProfile() {
       });
       if (estimate.status === "ok") {
         resolvedRebuildEstimateCents = estimate.value.rebuildEstimateCents.amount;
+        resolvedRebuildEstimateProvenance = "illustrative";
       }
     }
   }
@@ -139,6 +146,7 @@ export function HomeProfile() {
               : undefined,
           rebuildEstimateCents: resolvedRebuildEstimateCents,
           provenance: "entered",
+          rebuildEstimateProvenance: resolvedRebuildEstimateProvenance,
         })
       : null;
 
