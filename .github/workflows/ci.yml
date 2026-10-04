@@ -16,6 +16,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+      # Generates .next/types/ (route/layout prop types like LayoutProps),
+      # which tsconfig.json includes but only `next dev`/`next build`
+      # produce as a side effect — needed before type-check on a fresh
+      # checkout, where that directory doesn't exist yet.
+      - run: npx next typegen
       - run: npm run type-check
       - run: npm test
       - run: npm run build
