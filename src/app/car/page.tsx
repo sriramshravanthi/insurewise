@@ -1,16 +1,19 @@
+import { Car } from "lucide-react";
 import { CarProfile } from "@/features/car/car-profile";
+import { PageHeader } from "@/components/page-header";
+import { PageFadeIn } from "@/components/page-fade-in";
 
 export default function CarPage() {
   return (
     <main className="mx-auto flex max-w-4xl flex-col gap-6 p-8">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold">Car profile</h1>
-        <p className="text-sm text-muted-foreground">
-          Enter your vehicle, drivers, and coverage to see a summary, a
-          coverage breakdown, and how your premium breaks down line by line.
-        </p>
-      </div>
-      <CarProfile />
+      <PageHeader
+        icon={<Car className="size-5" />}
+        title="Car profile"
+        description="Enter your vehicle, drivers, and coverage to see a summary, a coverage breakdown, and how your premium breaks down line by line."
+      />
+      <PageFadeIn>
+        <CarProfile />
+      </PageFadeIn>
     </main>
   );
 }

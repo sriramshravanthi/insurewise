@@ -108,7 +108,7 @@ export default function Home() {
           <p className="text-sm font-semibold uppercase tracking-widest text-primary">
             InsureWise
           </p>
-          <h1 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-6xl">
+          <h1 className="text-4xl font-bold sm:text-6xl">
             Understand your car and home insurance
           </h1>
           <p className="max-w-xl text-base text-muted-foreground sm:text-lg">

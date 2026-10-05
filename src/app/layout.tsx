@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Sora } from "next/font/google";
 import { DisclosureBanner } from "@/components/disclosure-banner";
 import { SiteNav } from "@/components/site-nav";
 import "./globals.css";
@@ -14,6 +14,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// A bolder, more expressive geometric sans for headings only — body copy
+// stays on Geist for readability (WCAG 2.2 AA, CLAUDE.md accessibility).
+const sora = Sora({
+  variable: "--font-heading-sora",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: "InsureWise",
   description:
@@ -24,7 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${sora.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <DisclosureBanner />
